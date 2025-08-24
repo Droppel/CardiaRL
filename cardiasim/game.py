@@ -38,14 +38,15 @@ class KnownGameState():
         self.encounters: typing.List[Encounter] = []
 
 class Game():
-    def __init__(self, players: typing.List[Player]):
+    def __init__(self, players: typing.List[Player], render=True):
+        self.render = render
         self.players: typing.List[Player] = players
 
         self.playopen = [False, False]
         self.current_encounter = 0
         self.encounters: typing.List[Encounter] = []
         self.drawwinner = 0  # 0 for draw, 1 for player1, 2 for player2, 3 for both
-        self.winner = 0
+        self.winner = 0 # 0 for no winner, 1 for player1, 2 for player2
         pass
 
     def get_encounter(self, index) -> Encounter:
@@ -65,7 +66,13 @@ class Game():
         state.encounters = copy.deepcopy(self.encounters)
         return state
 
-    def print(self):
+    def print(self, msg):
+        if self.render:
+            print(msg)
+
+    def print_state(self):
+        if not self.render:
+            return
         print(f"{self.players[0].name} Handcards: {len(self.players[0].hand)}")
         print(f"{self.players[0].name} Deck: {len(self.players[0].deck)}")
         player1_discard = f"{self.players[0].name} Discard: "
@@ -86,39 +93,39 @@ class Game():
                 print(encounter)
         print("-----")
 
-    def turn(self):
-        print("Starting turn")
-        self.print()
+    def turn(self) -> bool:
+        self.print("Starting turn")
+        self.print_state()
 
         player1_card: Card = None
         player2_card: Card = None
         player1_card_choices = [card for card in self.players[0].hand]
         player2_card_choices = [card for card in self.players[1].hand]
         if not player1_card_choices and not player2_card_choices:
-            print("No cards left! The game ends in a draw.")
-            return
+            self.print("No cards left! The game ends in a draw.")
+            return 0
         if not player1_card_choices:
-            print(f"{self.players[0].name} has no cards to play. Player 2 wins!")
-            return
+            self.print(f"{self.players[0].name} has no cards to play. Player 2 wins!")
+            return 2
         if not player2_card_choices:
-            print(f"{self.players[1].name} has no cards to play. Player 1 wins!")
-            return
-        
+            self.print(f"{self.players[1].name} has no cards to play. Player 1 wins!")
+            return 1
+
         if self.playopen[0]:
             player1_card = self.players[0].choose("PlayOpen", player1_card_choices, self.get_gamestate())
-            print(f"{self.players[0].name} played {player1_card.name}")
+            self.print(f"{self.players[0].name} played {player1_card.name}")
             player2_card = self.players[1].choose("PlayRevealed", player2_card_choices, self.get_gamestate())
-            print(f"{self.players[1].name} played {player2_card.name}")
+            self.print(f"{self.players[1].name} played {player2_card.name}")
         elif self.playopen[1]:
             player2_card = self.players[1].choose("PlayOpen", player2_card_choices, self.get_gamestate())
-            print(f"{self.players[1].name} played {player2_card.name}")
+            self.print(f"{self.players[1].name} played {player2_card.name}")
             player1_card = self.players[0].choose("PlayRevealed", player1_card_choices, self.get_gamestate())
-            print(f"{self.players[0].name} played {player1_card.name}")
+            self.print(f"{self.players[0].name} played {player1_card.name}")
         else:
             player1_card = self.players[0].choose("PlayCard", player1_card_choices, self.get_gamestate())
             player2_card = self.players[1].choose("PlayCard", player2_card_choices, self.get_gamestate())
-            print(f"{self.players[0].name} played {player1_card.name}")
-            print(f"{self.players[1].name} played {player2_card.name}")
+            self.print(f"{self.players[0].name} played {player1_card.name}")
+            self.print(f"{self.players[1].name} played {player2_card.name}")
         
         self.players[0].hand.remove(player1_card)
         self.players[1].hand.remove(player2_card)
@@ -126,24 +133,24 @@ class Game():
         self.playopen = [False, False]
         
         # Play cards
-        print(f"{self.players[0].name} plays {player1_card.name}: Influence {player1_card.influence}")
-        print(f"{self.players[1].name} plays {player2_card.name}: Influence {player2_card.influence}")
+        self.print(f"{self.players[0].name} plays {player1_card.name}: Influence {player1_card.influence}")
+        self.print(f"{self.players[1].name} plays {player2_card.name}: Influence {player2_card.influence}")
         encounter = self.get_encounter(self.current_encounter)
         encounter.cards[0] = player1_card
         encounter.cards[1] = player2_card
         sigil = encounter.get_sigil(self.drawwinner)
         if sigil == -1:
-            print("Not possible to evaluate sigil.")
+            self.print("Not possible to evaluate sigil.")
         elif sigil == 0:
-            print("Both players played cards with equal influence. No sigils awarded.")
+            self.print("Both players played cards with equal influence. No sigils awarded.")
         elif sigil == 1:
             player2_card.effect(self, self.players[1].id)
         else:
             player1_card.effect(self, self.players[0].id)
 
         if self.winner != 0:
-            print(f"Player {self.winner} has already won the game.")
-            return
+            self.print(f"Player {self.winner} has already won the game.")
+            return self.winner
 
         self.players[0].draw_card()
         self.players[1].draw_card()
@@ -177,13 +184,13 @@ class Game():
         if player1_sigils == player2_sigils:
             pass
         elif player1_sigils >= 5 and player1_sigils > player2_sigils:
-            print(f"{self.players[0].name} wins!")
-            return
+            self.print(f"{self.players[0].name} wins!")
+            return 1
         elif player2_sigils >= 5 and player2_sigils > player1_sigils:
-            print(f"{self.players[1].name} wins!")
-            return
+            self.print(f"{self.players[1].name} wins!")
+            return 2
 
-        print(f"End of turn. Sigils - {self.players[0].name}: {player1_sigils}, {self.players[1].name}: {player2_sigils}")
+        self.print(f"End of turn. Sigils - {self.players[0].name}: {player1_sigils}, {self.players[1].name}: {player2_sigils}")
 
         self.current_encounter += 1
-        self.turn()
+        return -1

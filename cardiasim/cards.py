@@ -11,7 +11,7 @@ class Card():
         pass
 
     def effect(self, game: 'Game', player_id: 'int'):
-        print(f"Activate {self.name} effect")
+        game.print(f"Activate {self.name} effect")
 
     def __str__(self):
         return self.name
@@ -72,7 +72,7 @@ class Voidmage(Card):
             encounter.modifiers[choice.player] = 0
         else:
             encounter.permanent[choice.player] = False
-        print(f"Removed {'modifier' if choice.modOrPerm else 'permanent'} from encounter {choice.encounter} for player {choice.player}")
+        game.print(f"Removed {'modifier' if choice.modOrPerm else 'permanent'} from encounter {choice.encounter} for player {choice.player}")
 
 class Surgeon(Card):
     def __init__(self):
@@ -107,7 +107,7 @@ class Saboteur(Card):
         for _ in range(min(2, len(game.players[other_player_id].deck))):
             card = game.players[other_player_id].deck.pop() 
             game.players[other_player_id].discard.append(card)
-            print(f"{game.players[other_player_id].name} discards {card.name} from the top of their deck")
+            game.print(f"{game.players[other_player_id].name} discards {card.name} from the top of their deck")
 
 class FortuneTeller(Card):
     def __init__(self):
@@ -145,11 +145,11 @@ class PalaceGuard(Card):
             if discard_choice:
                 other_player.hand.remove(discard_choice)
                 other_player.discard.append(discard_choice)
-                print(f"{other_player.name} discards {discard_choice.name}")
+                game.print(f"{other_player.name} discards {discard_choice.name}")
                 hasdiscarded = True
         
         if not hasdiscarded:
-            print(f"{other_player.name} does not discard a card.")
+            game.print(f"{other_player.name} does not discard a card.")
             game.encounters[game.current_encounter].modifiers[player_id] += 7
 
 class Judge(Card):
@@ -174,7 +174,7 @@ class Ambusher(Card):
         options = [0, 1, 2, 3]
         player = game.players[player_id]
         choice = player.choose("Ambusher", options, game.get_gamestate())
-        print(f"{player.name} chooses faction {choice} for opponent to discard")
+        game.print(f"{player.name} chooses faction {choice} for opponent to discard")
 
         other_player_id = player_id ^ 1
         other_player = game.players[other_player_id]
@@ -183,7 +183,7 @@ class Ambusher(Card):
             if card.faction == choice:
                 other_player.hand.remove(card)
                 other_player.discard.append(card)
-                print(f"{other_player.name} discards {card.name}")
+                game.print(f"{other_player.name} discards {card.name}")
 
 class Puppeteer(Card):
     def __init__(self):
@@ -275,7 +275,7 @@ class Magistra(Card):
         choice = player.choose("Magistra", option_names, game.get_gamestate())
         if choice:
             card = options[option_names.index(choice)]
-            card.effect(game, player)
+            card.effect(game, player_id)
 
 class InventorChoice():
     def __init__(self, enc, player_id):
