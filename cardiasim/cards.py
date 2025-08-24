@@ -80,7 +80,7 @@ class Surgeon(Card):
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
         next_encounter = game.get_encounter(game.current_encounter + 1)
-        next_encounter.modifiers[player_id] += 5
+        next_encounter.modifiers[player_id] -= 5
 
 class Mediator(Card):
     def __init__(self):
