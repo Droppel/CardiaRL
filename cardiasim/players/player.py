@@ -18,7 +18,7 @@ class Player():
         self.deck = []
         self.discard = []
         self.setup_deck()
-        self.draw_card(16)
+        self.draw_card(5)
 
     def setup_deck(self):
         # Dynamically import all Card subclasses from py
