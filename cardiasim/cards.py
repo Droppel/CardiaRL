@@ -101,11 +101,10 @@ class Saboteur(Card):
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
         other_player_id = player_id ^ 1
-        card1 = game.players[other_player_id].deck.pop() if game.players[other_player_id].deck else None
-        card2 = game.players[other_player_id].deck.pop() if game.players[other_player_id].deck else None
-        game.players[other_player_id].discard.append(card1)
-        game.players[other_player_id].discard.append(card2)
-        print(f"{game.players[other_player_id].name} discards {card1.name if card1 else 'No card'} and {card2.name if card2 else 'No card'} from the top of their deck")
+        for _ in range(min(2, len(game.players[other_player_id].deck))):
+            card = game.players[other_player_id].deck.pop() 
+            game.players[other_player_id].discard.append(card)
+            print(f"{game.players[other_player_id].name} discards {card.name} from the top of their deck")
 
 class FortuneTeller(Card):
     def __init__(self):
