@@ -75,28 +75,36 @@ class Game():
 
         player1_card: Card = None
         player2_card: Card = None
-        if self.playopen[0]:
-            player1_card = self.players[0].play_card()
-            print(f"{self.players[0].name} played {player1_card.name}")
-            player2_card = self.players[1].play_card()
-        elif self.playopen[1]:
-            player2_card = self.players[1].play_card()
-            print(f"{self.players[1].name} played {player2_card.name}")
-            player1_card = self.players[0].play_card()
-        else:
-            player1_card = self.players[0].play_card()
-            player2_card = self.players[1].play_card()
-
-        if player1_card is None and player2_card is None:
+        player1_card_choices = [card for card in self.players[0].hand]
+        player2_card_choices = [card for card in self.players[1].hand]
+        if not player1_card_choices and not player2_card_choices:
             print("No cards left! The game ends in a draw.")
             return
-        if player1_card is None:
+        if not player1_card_choices:
             print(f"{self.players[0].name} has no cards to play. Player 2 wins!")
             return
-        if player2_card is None:
+        if not player2_card_choices:
             print(f"{self.players[1].name} has no cards to play. Player 1 wins!")
             return
         
+        if self.playopen[0]:
+            player1_card = self.players[0].choose("PlayOpen", player1_card_choices)
+            print(f"{self.players[0].name} played {player1_card.name}")
+            player2_card = self.players[1].choose("PlayRevealed", player2_card_choices)
+            print(f"{self.players[1].name} played {player2_card.name}")
+        elif self.playopen[1]:
+            player2_card = self.players[1].choose("PlayOpen", player2_card_choices)
+            print(f"{self.players[1].name} played {player2_card.name}")
+            player1_card = self.players[0].choose("PlayRevealed", player1_card_choices)
+            print(f"{self.players[0].name} played {player1_card.name}")
+        else:
+            player1_card = self.players[0].choose("PlayCard", player1_card_choices)
+            player2_card = self.players[1].choose("PlayCard", player2_card_choices)
+            print(f"{self.players[0].name} played {player1_card.name}")
+            print(f"{self.players[1].name} played {player2_card.name}")
+        
+        self.players[0].hand.remove(player1_card)
+        self.players[1].hand.remove(player2_card)
         # Reset playopen states
         self.playopen = [False, False]
         

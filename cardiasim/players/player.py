@@ -39,8 +39,5 @@ class Player():
         for card in self.hand:
             print(f"- {card.name}")
 
-    def choose(self, choice_list):
-        pass
-
-    def play_card(self):
+    def choose(self, name, choice_list):
         pass

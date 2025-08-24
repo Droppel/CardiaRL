@@ -63,7 +63,7 @@ class Voidmage(Card):
 
         if not options:
             return
-        choice: VoidmageChoice = game.players[player_id].choose(options)
+        choice: VoidmageChoice = game.players[player_id].choose("Voidmage", options)
         encounter = game.encounters[choice.encounter]
         if choice.modOrPerm:
             encounter.modifiers[choice.player] = 0
@@ -130,7 +130,7 @@ class PalaceGuard(Card):
         player = game.players[player_id]
         
         options = [0, 1, 2, 3]
-        choice = player.choose(options)
+        choice = player.choose("PalaceGuardFaction", options)
         
         options = [card for card in other_player.hand if card.faction == choice]
 
@@ -138,7 +138,7 @@ class PalaceGuard(Card):
         # If player has cards matching the faction give option to discard one
         if options:
             options.append(None) # Option to not discard
-            discard_choice = other_player.choose(options)
+            discard_choice = other_player.choose("PalaceGuardDiscard", options)
             if discard_choice:
                 other_player.hand.remove(discard_choice)
                 other_player.discard.append(discard_choice)
@@ -170,7 +170,7 @@ class Ambusher(Card):
         super().effect(game, player_id)
         options = [0, 1, 2, 3]
         player = game.players[player_id]
-        choice = player.choose(options)
+        choice = player.choose("Ambusher", options)
         print(f"{player.name} chooses faction {choice} for opponent to discard")
 
         other_player_id = player_id ^ 1
@@ -242,7 +242,7 @@ class SwampGuardian(Card):
         options = range(0, game.current_encounter-1)
         if not options:
             return
-        choice = player.choose(options)
+        choice = player.choose("SwampGuardian", options)
         encounter: Encounter = game.encounters[choice]
         # Give player card back, discard other player's card
         player.hand.append(encounter.cards[player_id])
@@ -269,7 +269,7 @@ class Magistra(Card):
         if not options:
             return
         player = game.players[player_id]
-        choice = player.choose(option_names)
+        choice = player.choose("Magistra", option_names)
         if choice:
             card = options[option_names.index(choice)]
             card.effect(game, player)
@@ -278,6 +278,9 @@ class InventorChoice():
     def __init__(self, enc, player_id):
         self.encounter: Encounter = enc
         self.player_id: int = player_id
+    
+    def __str__(self):
+        return f"Enc {self.encounter} P{self.player_id}"
 
 class Inventor(Card):
     def __init__(self):
@@ -295,10 +298,10 @@ class Inventor(Card):
             options.append(InventorChoice(enc, player_id))
             options.append(InventorChoice(enc, other_player_id))
 
-        inc_choice: InventorChoice = player.choose(options)
+        inc_choice: InventorChoice = player.choose("InventorIncrease", options)
         inc_choice.encounter.modifiers[inc_choice.player_id] += 3
 
-        dec_choice: InventorChoice = player.choose(options)
+        dec_choice: InventorChoice = player.choose("InventorDecrease", options)
         dec_choice.encounter.modifiers[dec_choice.player_id] -= 3
 
 class Djinn(Card):
