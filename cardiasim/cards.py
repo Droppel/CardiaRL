@@ -28,6 +28,7 @@ class HiredBlade(Card):
         game.players[1].discard.append(current_encounter.cards[1])
         # Remove the encounter from the game
         game.encounters.remove(current_encounter)
+        game.current_encounter -= 1
 
 class VoidmageChoice():
     def __init__(self, encounter, modOrPerm, player):
@@ -260,6 +261,7 @@ class SwampGuardian(Card):
         other_player.discard.append(encounter.cards[other_player_id])
         # Remove the encounter from the game
         game.encounters.remove(encounter)
+        game.current_encounter -= 1
 
 class Magistra(Card):
     def __init__(self):

@@ -72,7 +72,6 @@ class Game():
     def turn(self):
         print("Starting turn")
         self.print()
-        self.current_encounter = len(self.encounters) - 1
 
         player1_card: Card = None
         player2_card: Card = None
@@ -161,4 +160,5 @@ class Game():
 
         print(f"End of turn. Sigils - {self.players[0].name}: {player1_sigils}, {self.players[1].name}: {player2_sigils}")
 
+        self.current_encounter += 1
         self.turn()
