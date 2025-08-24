@@ -197,7 +197,9 @@ class Puppeteer(Card):
         player = game.players[player_id]
         other_player_id = player_id ^ 1
         other_player = game.players[other_player_id]
-
+        if not other_player.hand:
+            game.winner = player_id
+            return
         other_player.discard.append(encounter.cards[other_player_id])
         encounter.cards[other_player_id] = None
         newcard = random.choice(other_player.hand)
