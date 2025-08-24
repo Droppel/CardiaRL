@@ -1,12 +1,14 @@
 import typing
 from .player import Player
 from ..cards import *
+if typing.TYPE_CHECKING:
+    from ..game import KnownGameState
 
 class Human(Player):
     def __init__(self, name, id):
         super().__init__(name, id)
 
-    def choose(self, name, choice_list):
+    def choose(self, name, choice_list, known_state: 'KnownGameState'):
         print(f"Available choices for {name}:")
         for i, choice in enumerate(choice_list):
             print(f"{i + 1}: {choice}")

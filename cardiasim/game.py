@@ -1,3 +1,4 @@
+import copy
 import typing
 import random
 
@@ -29,6 +30,12 @@ class Encounter():
 
     def __str__(self):
         return f" - {self.cards[0].name} ({self.cards[0].influence+self.modifiers[0]}) vs {self.cards[1].name} ({self.cards[1].influence+self.modifiers[1]})"
+class KnownGameState():
+    def __init__(self):
+        self.handsizes = [0, 0]
+        self.decksizes = [0, 0]
+        self.playopen = [False, False]
+        self.encounters: typing.List[Encounter] = []
 
 class Game():
     def __init__(self, players: typing.List[Player]):
@@ -47,6 +54,16 @@ class Game():
         new_enc = Encounter()
         self.encounters.append(new_enc)
         return new_enc
+
+    def get_gamestate(self) -> KnownGameState:
+        state = KnownGameState()
+        state.handsizes[0] = len(self.players[0].hand)
+        state.handsizes[1] = len(self.players[1].hand)
+        state.decksizes[0] = len(self.players[0].deck)
+        state.decksizes[1] = len(self.players[1].deck)
+        state.playopen = copy.deepcopy(self.playopen)
+        state.encounters = copy.deepcopy(self.encounters)
+        return state
 
     def print(self):
         print(f"{self.players[0].name} Handcards: {len(self.players[0].hand)}")
@@ -88,18 +105,18 @@ class Game():
             return
         
         if self.playopen[0]:
-            player1_card = self.players[0].choose("PlayOpen", player1_card_choices)
+            player1_card = self.players[0].choose("PlayOpen", player1_card_choices, self.get_gamestate())
             print(f"{self.players[0].name} played {player1_card.name}")
-            player2_card = self.players[1].choose("PlayRevealed", player2_card_choices)
+            player2_card = self.players[1].choose("PlayRevealed", player2_card_choices, self.get_gamestate())
             print(f"{self.players[1].name} played {player2_card.name}")
         elif self.playopen[1]:
-            player2_card = self.players[1].choose("PlayOpen", player2_card_choices)
+            player2_card = self.players[1].choose("PlayOpen", player2_card_choices, self.get_gamestate())
             print(f"{self.players[1].name} played {player2_card.name}")
-            player1_card = self.players[0].choose("PlayRevealed", player1_card_choices)
+            player1_card = self.players[0].choose("PlayRevealed", player1_card_choices, self.get_gamestate())
             print(f"{self.players[0].name} played {player1_card.name}")
         else:
-            player1_card = self.players[0].choose("PlayCard", player1_card_choices)
-            player2_card = self.players[1].choose("PlayCard", player2_card_choices)
+            player1_card = self.players[0].choose("PlayCard", player1_card_choices, self.get_gamestate())
+            player2_card = self.players[1].choose("PlayCard", player2_card_choices, self.get_gamestate())
             print(f"{self.players[0].name} played {player1_card.name}")
             print(f"{self.players[1].name} played {player2_card.name}")
         

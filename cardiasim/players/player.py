@@ -3,6 +3,8 @@ import typing
 import random
 
 from ..cards import *
+if typing.TYPE_CHECKING:
+    from ..game import KnownGameState
 
 class Player():
     deck:  typing.List[Card]
@@ -39,5 +41,5 @@ class Player():
         for card in self.hand:
             print(f"- {card.name}")
 
-    def choose(self, name, choice_list):
+    def choose(self, name, choice_list, known_state: 'KnownGameState'):
         pass
