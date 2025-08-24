@@ -1,6 +1,7 @@
 import typing
 from cardiasim.players.randomcpu import RandomCPU
 from cardiasim.players.human import Human
+from cardiasim.players.cpualwayshighest import CPUAlwaysHighest
 from cardiasim.game import Game
 
 if __name__ == "__main__":
@@ -9,8 +10,7 @@ if __name__ == "__main__":
     player2_wins = 0
     draws = 0
     for episode in range(episodes):
-        print(f"--- Episode {episode + 1} ---")
-        players = [RandomCPU("Cpu1", 0), RandomCPU("Cpu2", 1)]
+        players = [RandomCPU("Cpu1", 0), CPUAlwaysHighest("Cpu2", 1)]
         game = Game(players, render=False)
         done = -1
         while done == -1:

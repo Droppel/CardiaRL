@@ -5,7 +5,7 @@ from ..cards import Card
 if typing.TYPE_CHECKING:
     from ..game import KnownGameState
 
-class RandomCPU(Player):
+class CPUAlwaysHighest(Player):
     def __init__(self, name, id):
         super().__init__(name, id)
 
@@ -13,6 +13,9 @@ class RandomCPU(Player):
         # Simple evaluation: random value for now
         return random.random()
 
-    def choose(self, choice_list, known_state: 'KnownGameState'):
+    def choose(self, name, choice_list, known_state: 'KnownGameState'):
+        if name != "PlayCard" and name != "PlayFirst" and name != "PlaySecond":
+            return random.choice(choice_list)
         # Use known_state to make a more informed decision
-        return random.choice(choice_list)
+        highest_influence_card = max(choice_list, key=lambda card: card.influence)
+        return highest_influence_card

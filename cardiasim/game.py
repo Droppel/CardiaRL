@@ -112,14 +112,14 @@ class Game():
             return 1
 
         if self.playopen[0]:
-            player1_card = self.players[0].choose("PlayOpen", player1_card_choices, self.get_gamestate())
+            player1_card = self.players[0].choose("PlayFirst", player1_card_choices, self.get_gamestate())
             self.print(f"{self.players[0].name} played {player1_card.name}")
-            player2_card = self.players[1].choose("PlayRevealed", player2_card_choices, self.get_gamestate())
+            player2_card = self.players[1].choose("PlaySecond", player2_card_choices, self.get_gamestate())
             self.print(f"{self.players[1].name} played {player2_card.name}")
         elif self.playopen[1]:
-            player2_card = self.players[1].choose("PlayOpen", player2_card_choices, self.get_gamestate())
+            player2_card = self.players[1].choose("PlayFirst", player2_card_choices, self.get_gamestate())
             self.print(f"{self.players[1].name} played {player2_card.name}")
-            player1_card = self.players[0].choose("PlayRevealed", player1_card_choices, self.get_gamestate())
+            player1_card = self.players[0].choose("PlaySecond", player1_card_choices, self.get_gamestate())
             self.print(f"{self.players[0].name} played {player1_card.name}")
         else:
             player1_card = self.players[0].choose("PlayCard", player1_card_choices, self.get_gamestate())
