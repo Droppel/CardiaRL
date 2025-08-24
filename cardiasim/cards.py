@@ -79,7 +79,6 @@ class Surgeon(Card):
     
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
-        print(f"Activate Surgeon effect")
         next_encounter = game.get_encounter(game.current_encounter + 1)
         next_encounter.modifiers[player_id] += 5
 
@@ -91,7 +90,6 @@ class Mediator(Card):
     
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
-        print(f"Activate Mediator effect")
         game.encounters[game.current_encounter].permanent[player_id] = True
 
 class Saboteur(Card):
@@ -102,13 +100,12 @@ class Saboteur(Card):
     
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
-        print(f"Activate Saboteur effect")
         other_player_id = player_id ^ 1
-        card1 = game.players[other_player_id].deck.pop()
-        card2 = game.players[other_player_id].deck.pop()
+        card1 = game.players[other_player_id].deck.pop() if game.players[other_player_id].deck else None
+        card2 = game.players[other_player_id].deck.pop() if game.players[other_player_id].deck else None
         game.players[other_player_id].discard.append(card1)
         game.players[other_player_id].discard.append(card2)
-        print(f"{game.players[other_player_id].name} discards {card1.name} and {card2.name} from the top of their deck")
+        print(f"{game.players[other_player_id].name} discards {card1.name if card1 else 'No card'} and {card2.name if card2 else 'No card'} from the top of their deck")
 
 class FortuneTeller(Card):
     def __init__(self):
@@ -118,7 +115,6 @@ class FortuneTeller(Card):
     
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
-        print(f"Activate Fortune Teller effect")
         other_player_id = player_id ^ 1
         game.playopen[other_player_id] = True
 
@@ -130,7 +126,6 @@ class PalaceGuard(Card):
     
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
-        print(f"Activate Palace Guard effect")
         other_player_id = player_id ^ 1
         other_player = game.players[other_player_id]
         player = game.players[player_id]
@@ -163,7 +158,6 @@ class Judge(Card):
     
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
-        print(f"Activate Judge effect")
         encounter = game.encounters[game.current_encounter]
         encounter.permanent[player_id] = True
 
@@ -175,7 +169,6 @@ class Ambusher(Card):
     
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
-        print(f"Activate Ambusher effect")
         options = [0, 1, 2, 3]
         player = game.players[player_id]
         choice = player.choose(options)
@@ -198,7 +191,6 @@ class Puppeteer(Card):
     
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
-        print(f"Activate Puppeteer effect")
         encounter = game.encounters[game.current_encounter]
         player = game.players[player_id]
         other_player_id = player_id ^ 1
@@ -218,7 +210,6 @@ class Clockmaker(Card):
     
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
-        print(f"Activate Clockmaker effect")
         prev_encounter = game.encounters[game.current_encounter - 1] if game.current_encounter > 0 else None
         if prev_encounter:
             prev_encounter.modifiers[player_id] += 3
@@ -234,7 +225,6 @@ class Treasurer(Card):
     
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
-        print(f"Activate Treasurer effect")
         encounter = game.encounters[game.current_encounter]
         encounter.permanent[player_id] = True
 
@@ -246,7 +236,6 @@ class SwampGuardian(Card):
     
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
-        print(f"Activate Swamp Guardian effect")
         player = game.players[player_id]
         other_player_id = player_id ^ 1
         other_player = game.players[other_player_id]
@@ -271,7 +260,6 @@ class Magistra(Card):
     
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
-        print(f"Activate Magistra effect")
         mininfl = game.encounters[game.current_encounter].cards[player_id].influence
         options: typing.List[Card] = []
         option_names: typing.List[str] = []
@@ -300,14 +288,13 @@ class Inventor(Card):
     
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
-        print(f"Activate Inventor effect")
         player = game.players[player_id]
         other_player_id = player_id ^ 1
 
         options: typing.List[InventorChoice] = []
         for enc in game.encounters:
-            options.append(InventorChoice(enc, 0))
-            options.append(InventorChoice(enc, 1))
+            options.append(InventorChoice(enc, player_id))
+            options.append(InventorChoice(enc, other_player_id))
 
         inc_choice: InventorChoice = player.choose(options)
         inc_choice.encounter.modifiers[inc_choice.player_id] += 3
@@ -323,5 +310,4 @@ class Djinn(Card):
 
     def effect(self, game: 'Game', player_id: 'int'):
         super().effect(game, player_id)
-        print(f"Activate Djinn effect")
         game.winner = player_id
