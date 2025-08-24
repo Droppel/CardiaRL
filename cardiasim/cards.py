@@ -13,6 +13,9 @@ class Card():
     def effect(self, game: 'Game', player_id: 'int'):
         print(f"Activate {self.name} effect")
 
+    def __str__(self):
+        return self.name
+
 class HiredBlade(Card):
     def __init__(self):
         super().__init__()
