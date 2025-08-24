@@ -1,7 +1,10 @@
 import typing
 import random
 
-from cards import *
+from .cards import *
+from .players.player import Player
+from .players.randomcpu import RandomCPU
+from .players.human import Human
 
 class Encounter():
     def __init__(self):
@@ -28,10 +31,8 @@ class Encounter():
         return f" - {self.cards[0].name} ({self.cards[0].influence+self.modifiers[0]}) vs {self.cards[1].name} ({self.cards[1].influence+self.modifiers[1]})"
 
 class Game():
-    def __init__(self):
-        self.players: typing.List[Player] = []
-        self.players.append(CPU("Cpu", 0))
-        self.players.append(Human("Human", 1))
+    def __init__(self, players: typing.List[Player]):
+        self.players: typing.List[Player] = players
 
         self.playopen = [False, False]
         self.current_encounter = 0
@@ -71,7 +72,7 @@ class Game():
     def turn(self):
         print("Starting turn")
         self.print()
-        self.current_encounter = len(self.encounters)
+        self.current_encounter = len(self.encounters) - 1
 
         player1_card: Card = None
         player2_card: Card = None
@@ -87,8 +88,6 @@ class Game():
             player1_card = self.players[0].play_card()
             player2_card = self.players[1].play_card()
 
-        print(f"Player 1 played: {player1_card.name if player1_card else 'No card'}")
-        print(f"Player 2 played: {player2_card.name if player2_card else 'No card'}")
         if player1_card is None and player2_card is None:
             print("No cards left! The game ends in a draw.")
             return
@@ -118,8 +117,8 @@ class Game():
         else:
             player1_card.effect(self, self.players[0].id)
 
-        if game.winner != 0:
-            print(f"Player {game.winner} has already won the game.")
+        if self.winner != 0:
+            print(f"Player {self.winner} has already won the game.")
             return
 
         self.players[0].draw_card()
@@ -163,93 +162,3 @@ class Game():
         print(f"End of turn. Sigils - {self.players[0].name}: {player1_sigils}, {self.players[1].name}: {player2_sigils}")
 
         self.turn()
-
-class Player():
-    deck:  typing.List[Card]
-    hand: typing.List[Card]
-    discard: typing.List[Card] 
-    name: str
-    id: int
-
-    def __init__(self, name, id):
-        self.name = name
-        self.id = id
-        self.hand = []
-        self.deck = []
-        self.discard = []
-        self.setup_deck()
-        self.draw_card(5)
-
-    def setup_deck(self):
-        # Dynamically import all Card subclasses from py
-        self.deck = [HiredBlade(), Voidmage(), Surgeon(), Mediator(), Saboteur(),
-                     FortuneTeller(), PalaceGuard(), Judge(), Ambusher(), Puppeteer(),
-                     Clockmaker(), Treasurer(), SwampGuardian(), Magistra(), Inventor(),
-                     Djinn()]
-        random.shuffle(self.deck)
-
-    def draw_card(self, count = 1):
-        for _ in range(count):
-            if len(self.deck) > 0:
-                card = self.deck.pop(0)
-                self.hand.append(card)
-
-    def print_hand(self):
-        print(f"{self.name}'s hand:")
-        for card in self.hand:
-            print(f"- {card.name}")
-
-    def choose(self, choice_list):
-        pass
-
-    def play_card(self):
-        pass
-
-class CPU(Player):
-    def __init__(self, name, id):
-        super().__init__(name, id)
-
-    def choose(self, choice_list):
-        return random.choice(choice_list)
-
-    def play_card(self) -> Card:
-        if self.hand:
-            card = random.choice(self.hand)
-            self.hand.remove(card)
-            return card
-        else:
-            print(f"{self.name} has no cards to play.")
-            return None
-
-class Human(Player):
-    def __init__(self, name, id):
-        super().__init__(name, id)
-
-    def choose(self, choice_list):
-        print("Available choices:")
-        for i, choice in enumerate(choice_list):
-            print(f"{i + 1}: {choice}")
-
-        choice_index = int(input("Choose an option: ")) - 1
-        if 0 <= choice_index < len(choice_list):
-            return choice_list[choice_index]
-        return choice_list[0]
-
-    def play_card(self) -> Card:
-        if self.hand:
-            self.print_hand()
-            card = None
-            cardname = input("Enter card to play:")
-            if cardname in [c.name for c in self.hand]:
-                card = self.hand[[c.name for c in self.hand].index(cardname)]
-            else:
-                card = self.hand[0]  # For simplicity, just play the first card in hand
-            self.hand.remove(card)
-            return card
-        else:
-            print(f"{self.name} has no cards to play.")
-            return None
-
-if __name__ == "__main__":
-    game = Game()
-    game.turn()  # Start the game

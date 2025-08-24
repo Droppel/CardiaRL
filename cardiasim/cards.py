@@ -1,7 +1,7 @@
 import typing
 import random
 if typing.TYPE_CHECKING:
-    from game import Game, Player, Encounter
+    from .game import Game, Player, Encounter
 
 class Card():
     def __init__(self):
@@ -36,7 +36,7 @@ class VoidmageChoice():
         self.player = player
     
     def __str__(self):
-        return f"Enc {self.encounter}: {'Mod' if self.modOrPerm else 'Perm'}"
+        return f"Enc {self.encounter}: {'Mod' if self.modOrPerm else 'Perm'} P{self.player}"
 
 class Voidmage(Card):
     def __init__(self):
