@@ -244,7 +244,7 @@ class SwampGuardian(Card):
         other_player_id = player_id ^ 1
         other_player = game.players[other_player_id]
         # Get available encounters
-        options = range(0, game.current_encounter-1)
+        options = range(0, game.current_encounter)
         if not options:
             return
         choice = player.choose("SwampGuardian", options, game.get_gamestate())
