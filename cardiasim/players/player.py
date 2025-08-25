@@ -19,6 +19,8 @@ class Player():
         self.hand = []
         self.deck = []
         self.discard = []
+    
+    def setup_player(self):
         self.setup_deck()
         self.draw_card(5)
 
