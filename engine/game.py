@@ -18,7 +18,7 @@ class Game:
         else:
             self.decks = decks
         self.next_modifier = [0, 0]
-        
+    
     def initial_deal(self):
         for _ in range(5):
             self.hands[0].append(self.decks[0].pop())
