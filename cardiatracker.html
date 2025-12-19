@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardia Tracker</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+            background-color: #000000;
+        }
+        img {
+            position: absolute;
+            bottom: 60px;
+            /* max-width: 30%; */
+            height: 90%;
+            z-index: 1;
+        }
+        .grid {
+            position: absolute;
+            bottom: 65px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            width: 552px;
+            height: 90%;
+            z-index: 2;
+        }
+        .grid div {
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+        .overlay {
+            background-color: rgba(0, 0, 0, 0.8);
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+        .grid div.active .overlay {
+            display: block;
+        }
+        button {
+            position: absolute;
+            bottom: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            z-index: 3;
+        }
+    </style>
+</head>
+<body>
+    <img src="cardiadeck1.png" alt="Card Image">
+    <div class="grid">
+        <!-- Generate 16 grid cells -->
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+        <div onclick="toggleOverlay(this)"><div class="overlay"></div></div>
+    </div>
+    <button onclick="setOverlayState(false)">Reset</button>
+    <script>
+        function toggleOverlay(cell) {
+            cell.classList.toggle('active');
+        }
+        function setOverlayState(state) {
+            const cells = document.querySelectorAll('.grid div');
+            cells.forEach(cell => {
+                if (state) {
+                    cell.classList.add('active');
+                } else {
+                    cell.classList.remove('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
